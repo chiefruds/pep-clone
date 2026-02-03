@@ -44,7 +44,7 @@ jobs:
       matrix:
         include:
         - language: c-cpp
-          build-mode: none
+          build-mode: manual
         - language: go
           build-mode: autobuild
         - language: python
@@ -86,16 +86,17 @@ jobs:
     # to build your code.
     # ℹ️ Command-line programs to run using the OS shell.
     # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
+    - name: Build Conan
+      if: matrix.language == 'c-cpp'
+      shell: bash
+      run: |
+            CC=clang CXX=clang++ ./docker-build/builder/conan/init_conan_profile.sh
+            conan install ./ --build=missing -s:a build_type=Debug
+            cmake --preset conan-debug
     - name: Run manual build steps
       if: matrix.build-mode == 'manual'
       shell: bash
-      run: |
-        echo 'If you are using a "manual" build mode for one or more of the' \
-          'languages you are analyzing, replace this with the commands to build' \
-          'your code, for example:'
-        echo '  make bootstrap'
-        echo '  make release'
-        exit 1
+      run: cmake --build --preset conan-debug -j 2 --clean-first
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v4
