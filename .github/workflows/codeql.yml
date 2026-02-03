@@ -61,7 +61,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0
+        submodules: true
 
     # Add any setup steps before running the `github/codeql-action/init` action.
     # This includes steps like installing compilers or runtimes (`actions/setup-node`
@@ -92,7 +92,6 @@ jobs:
       if: matrix.language == 'c-cpp'
       shell: bash
       run: |
-            git submodule update --init --recursive
             CC=clang CXX=clang++ ./docker-build/builder/conan/init_conan_profile.sh
             conan install ./ --build=missing -s:a build_type=Debug
             cmake --preset conan-debug
