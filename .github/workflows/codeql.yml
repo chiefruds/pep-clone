@@ -90,6 +90,7 @@ jobs:
       if: matrix.language == 'c-cpp'
       shell: bash
       run: |
+            git submodule update --init --recursive
             CC=clang CXX=clang++ ./docker-build/builder/conan/init_conan_profile.sh
             conan install ./ --build=missing -s:a build_type=Debug
             cmake --preset conan-debug
